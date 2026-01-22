@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="uk" class="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Тест Dark Mode</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+            };
+        </script>
+    </head>
+    <body
+        class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200"
+    >
+        <div class="container mx-auto p-8">
+            <h1 class="text-4xl font-bold mb-6">Тест Dark Mode</h1>
+
+            <div class="space-y-4 mb-8">
+                <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <p>Цей блок має змінювати колір при dark mode</p>
+                </div>
+
+                <div
+                    class="p-4 border border-gray-300 dark:border-gray-600 rounded-lg"
+                >
+                    <p>Border також має змінюватись</p>
+                </div>
+
+                <button
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                >
+                    Кнопка
+                </button>
+            </div>
+
+            <button
+                onclick="toggleDarkMode()"
+                class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold"
+            >
+                Перемкнути тему
+            </button>
+
+            <div class="mt-8 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                <p class="font-mono text-sm">
+                    Поточний клас на &lt;html&gt;: <span id="classInfo"></span>
+                </p>
+            </div>
+        </div>
+
+        <script>
+            function updateClassInfo() {
+                document.getElementById("classInfo").textContent =
+                    document.documentElement.className || "(немає класів)";
+            }
+
+            function toggleDarkMode() {
+                const html = document.documentElement;
+                html.classList.toggle("dark");
+                updateClassInfo();
+                console.log("Toggled! Current classes:", html.className);
+            }
+
+            updateClassInfo();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,630 @@
+// src/hooks/useUserInfo.js
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "../lib/supabase";
+import { useTranslation } from "react-i18next";
+
+export default function useUserInfo() {
+  const { t } = useTranslation();
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Функція для парсингу соціальних посилань
+  const parseSocialLinks = useCallback((links) => {
+    console.log(
+      "🚀 parseSocialLinks called with:",
+      links,
+      "Type:",
+      typeof links,
+    );
+
+    // Якщо null або undefined
+    if (links == null) {
+      console.log("📝 Links is null/undefined, returning empty array");
+      return [];
+    }
+
+    // Якщо це вже масив
+    if (Array.isArray(links)) {
+      console.log("✅ Links is already an array:", links);
+      return links;
+    }
+
+    // Якщо це строка
+    if (typeof links === "string") {
+      try {
+        // Видаляємо зайві пробіли
+        const trimmed = links.trim();
+        console.log("🔍 Trimmed string:", trimmed);
+
+        // Якщо порожня строка або порожній масив JSON
+        if (
+          trimmed === "" ||
+          trimmed === "[]" ||
+          trimmed === "{}" ||
+          trimmed === "null"
+        ) {
+          console.log("📄 Empty string/array, returning empty array");
+          return [];
+        }
+
+        // Спроба парсингу JSON
+        let parsed;
+        try {
+          parsed = JSON.parse(trimmed);
+          console.log("✅ Successfully parsed JSON:", parsed);
+        } catch (parseError) {
+          console.error("❌ JSON parse error:", parseError);
+          return [];
+        }
+
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+
+        // Якщо це об'єкт, але не масив
+        if (parsed && typeof parsed === "object") {
+          console.log("🔄 Parsed result is object, converting to array");
+          return Object.entries(parsed).map(([key, value]) => ({
+            platform: key,
+            username: value,
+            url: `https://${key.toLowerCase()}.com/${value}`,
+          }));
+        }
+
+        return [];
+      } catch (e) {
+        console.error("❌ Error parsing social links:", e);
+        return [];
+      }
+    }
+
+    // Для будь-якого іншого типу
+    console.log("❓ Unknown links type, returning empty array");
+    return [];
+  }, []);
+
+  // Функція для завантаження інформації про користувача
+  const loadUserInfo = useCallback(async () => {
+    console.log("🔄 loadUserInfo started");
+    setLoading(true);
+    setError("");
+
+    try {
+      // Перевіряємо авторизацію
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw new Error(t("user_error") || "Помилка завантаження користувача");
+      }
+
+      if (!user) {
+        console.log("👤 No user found");
+        setUserInfo(null);
+        setLoading(false);
+        return;
+      }
+
+      console.log("👤 User ID:", user.id);
+      console.log("👤 User email:", user.email);
+
+      // Отримуємо профіль з бази даних
+      const { data: profile, error: profileError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      console.log("📊 Profile from DB:", profile);
+
+      if (profileError) {
+        console.warn("⚠️ Profile not found, creating new one");
+        // Якщо профілю немає, створюємо базовий
+        const { data: newProfile, error: createError } = await supabase
+          .from("users")
+          .insert({
+            id: user.id,
+            email: user.email,
+            unique_name:
+              user.user_metadata?.unique_name || `user_${user.id.slice(0, 8)}`,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            has_completed_onboarding: false,
+            social_links: "[]",
+            role: "user", // За замовчуванням звичайний користувач
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          throw new Error(
+            t("create_profile_error") || "Помилка створення профілю",
+          );
+        }
+
+        const userData = {
+          id: newProfile.id,
+          email: newProfile.email,
+          uniqueName: newProfile.unique_name,
+          country: newProfile.country || "EARTH",
+          walletAddress: newProfile.wallet_address || null,
+          dateOfBirth: newProfile.date_of_birth || null,
+          age: calculateAge(newProfile.date_of_birth),
+          bio: newProfile.bio || null,
+          socialLinks: parseSocialLinks(newProfile.social_links),
+          avatarUrl: newProfile.avatar_url || null,
+          hasAcceptedTerms: newProfile.has_accepted_terms || false,
+          hasCompletedOnboarding: newProfile.has_completed_onboarding || false,
+          emailConfirmedAt: newProfile.email_confirmed_at || null,
+          hasAcceptedHumanRightsPolicy:
+            newProfile.has_accepted_human_rights_policy || false,
+          hasCompletedLessons: newProfile.has_completed_lessons || false,
+          hasCompletedTests: newProfile.has_completed_tests || false,
+          createdAt: newProfile.created_at,
+          updatedAt: newProfile.updated_at,
+          role: newProfile.role || "user", // Додаємо роль
+        };
+
+        console.log("✅ Created new user data:", userData);
+        setUserInfo(userData);
+        return userData;
+      }
+
+      // Формуємо структуровану інформацію про користувача
+      const socialLinks = parseSocialLinks(profile.social_links);
+
+      const userData = {
+        id: profile.id,
+        email: profile.email,
+        uniqueName: profile.unique_name,
+        country: profile.country || "EARTH",
+        walletAddress: profile.wallet_address || null,
+        dateOfBirth: profile.date_of_birth || null,
+        age: calculateAge(profile.date_of_birth),
+        bio: profile.bio || null,
+        socialLinks: socialLinks,
+        avatarUrl: profile.avatar_url || null,
+        hasAcceptedTerms: profile.has_accepted_terms || false,
+        hasCompletedOnboarding: profile.has_completed_onboarding || false,
+        emailConfirmedAt: profile.email_confirmed_at || null,
+        hasAcceptedHumanRightsPolicy:
+          profile.has_accepted_human_rights_policy || false,
+        hasCompletedLessons: profile.has_completed_lessons || false,
+        hasCompletedTests: profile.has_completed_tests || false,
+        createdAt: profile.created_at,
+        updatedAt: profile.updated_at,
+        role: profile.role || "user", // Додаємо роль
+      };
+
+      console.log("✅ Parsed user data:", {
+        avatarUrl: userData.avatarUrl,
+        socialLinks: userData.socialLinks,
+        socialLinksCount: userData.socialLinks.length,
+        hasAvatar: !!userData.avatarUrl,
+        role: userData.role, // Логуємо роль
+      });
+
+      // Перевіряємо наявність Web3 адреси в localStorage
+      const web3Addr = localStorage.getItem("web3_wallet_address");
+      if (web3Addr && !userData.walletAddress) {
+        userData.walletAddress = web3Addr;
+      }
+
+      setUserInfo(userData);
+      return userData;
+    } catch (error) {
+      console.error("❌ Error loading profile:", error.message || error);
+      setError(error.message);
+      return null;
+    } finally {
+      setLoading(false);
+      console.log("🏁 loadUserInfo completed");
+    }
+  }, [t, parseSocialLinks]);
+
+  // Функція для оновлення інформації про користувача
+  const updateUserInfo = useCallback(
+    async (updates) => {
+      try {
+        console.log("🔄 updateUserInfo called with:", updates);
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          throw new Error(
+            t("user_not_authenticated") || "Користувач не авторизований",
+          );
+        }
+
+        // Підготовка даних для оновлення
+        const updateData = {
+          updated_at: new Date().toISOString(),
+        };
+
+        // Додаємо поля, які потрібно оновити
+        if (updates.unique_name !== undefined) {
+          updateData.unique_name = updates.unique_name;
+        }
+        if (updates.bio !== undefined) {
+          updateData.bio = updates.bio;
+        }
+        if (updates.country !== undefined) {
+          updateData.country = updates.country;
+        }
+        if (updates.date_of_birth !== undefined) {
+          updateData.date_of_birth = updates.date_of_birth;
+        }
+        if (updates.avatar_url !== undefined) {
+          updateData.avatar_url = updates.avatar_url;
+        }
+        if (updates.role !== undefined) {
+          // Додано оновлення ролі
+          updateData.role = updates.role;
+        }
+
+        // Обробка соціальних посилань
+        if (updates.socialLinks !== undefined) {
+          const linksToSave = Array.isArray(updates.socialLinks)
+            ? updates.socialLinks
+            : [];
+          updateData.social_links = linksToSave;
+          console.log("💾 Saving social links:", linksToSave);
+        }
+
+        if (updates.social_links !== undefined) {
+          const linksToSave = Array.isArray(updates.social_links)
+            ? updates.social_links
+            : [];
+          updateData.social_links = linksToSave;
+          console.log("💾 Saving social links (alt):", linksToSave);
+        }
+
+        console.log("📤 Updating user with data:", updateData);
+
+        const { data, error: updateError } = await supabase
+          .from("users")
+          .update(updateData)
+          .eq("id", user.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error("❌ Update error:", updateError);
+          throw new Error(updateError.message);
+        }
+
+        console.log("✅ User updated successfully:", data);
+
+        // Оновлюємо локальний стан
+        const updatedUserInfo = {
+          ...userInfo,
+          updatedAt: updateData.updated_at,
+        };
+
+        // Оновлюємо специфічні поля
+        if (updates.unique_name !== undefined) {
+          updatedUserInfo.uniqueName = updates.unique_name;
+        }
+        if (updates.bio !== undefined) {
+          updatedUserInfo.bio = updates.bio;
+        }
+        if (updates.country !== undefined) {
+          updatedUserInfo.country = updates.country;
+        }
+        if (updates.date_of_birth !== undefined) {
+          updatedUserInfo.dateOfBirth = updates.date_of_birth;
+          updatedUserInfo.age = calculateAge(updates.date_of_birth);
+        }
+        if (updates.avatar_url !== undefined) {
+          updatedUserInfo.avatarUrl = updates.avatar_url;
+        }
+        if (updates.role !== undefined) {
+          // Додано оновлення ролі
+          updatedUserInfo.role = updates.role;
+        }
+
+        // Оновлюємо соціальні посилання
+        if (updates.socialLinks !== undefined) {
+          updatedUserInfo.socialLinks = Array.isArray(updates.socialLinks)
+            ? updates.socialLinks
+            : [];
+        }
+        if (updates.social_links !== undefined) {
+          updatedUserInfo.socialLinks = Array.isArray(updates.social_links)
+            ? updates.social_links
+            : [];
+        }
+
+        console.log("✅ Updated local user info:", updatedUserInfo);
+        setUserInfo(updatedUserInfo);
+        return updatedUserInfo;
+      } catch (error) {
+        console.error(
+          t("update_profile_error") || "Помилка оновлення профілю",
+          error,
+        );
+        throw error;
+      }
+    },
+    [userInfo, t],
+  );
+
+  // Функція для завантаження аватарки
+  const uploadAvatar = useCallback(
+    async (file) => {
+      try {
+        console.log(
+          "🔄 uploadAvatar called with file:",
+          file.name,
+          file.type,
+          file.size,
+        );
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          throw new Error(
+            t("user_not_authenticated") || "Користувач не авторизований",
+          );
+        }
+
+        // Перевіряємо тип файлу
+        if (!file.type.startsWith("image/")) {
+          throw new Error(
+            t("avatar_file_type_error") || "Будь ласка, виберіть зображення",
+          );
+        }
+
+        // Дозволені типи файлів
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+        ];
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error(
+            t("avatar_file_format_error") ||
+              "Дозволені формати: JPG, PNG, WebP, GIF",
+          );
+        }
+
+        // Максимальний розмір 5MB
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error(
+            t("avatar_file_size_error") ||
+              "Розмір файлу не повинен перевищувати 5MB",
+          );
+        }
+
+        // Отримуємо поточний аватар для видалення старої версії
+        const currentAvatarUrl = userInfo?.avatarUrl;
+        if (currentAvatarUrl) {
+          try {
+            const oldFileName = currentAvatarUrl.split("/").pop();
+            console.log("🗑️ Deleting old avatar:", oldFileName);
+            await supabase.storage
+              .from("user-content")
+              .remove([`avatars/${user.id}/${oldFileName}`]);
+          } catch (deleteError) {
+            console.warn("⚠️ Не вдалося видалити старий аватар:", deleteError);
+          }
+        }
+
+        // Генеруємо унікальне ім'я файлу
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `avatars/${user.id}/${fileName}`;
+
+        console.log("📤 Uploading avatar to:", filePath);
+
+        // Завантажуємо файл в Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from("user-content")
+          .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: true,
+            contentType: file.type,
+          });
+
+        if (uploadError) {
+          console.error("❌ Upload error:", uploadError);
+          throw new Error(uploadError.message);
+        }
+
+        // Отримуємо публічний URL з додатковим параметром для кешування
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("user-content").getPublicUrl(filePath, {
+          download: false,
+        });
+
+        // Додаємо timestamp для запобігання кешуванню
+        const urlWithTimestamp = `${publicUrl}?t=${Date.now()}`;
+
+        console.log("✅ Avatar uploaded, public URL:", urlWithTimestamp);
+
+        // Оновлюємо профіль користувача з новою аватаркою
+        const { error: updateError } = await supabase
+          .from("users")
+          .update({
+            avatar_url: urlWithTimestamp,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+
+        if (updateError) {
+          console.error("❌ Profile update error:", updateError);
+          throw new Error(updateError.message);
+        }
+
+        // Оновлюємо локальний стан
+        setUserInfo((prev) => ({
+          ...prev,
+          avatarUrl: urlWithTimestamp,
+          updatedAt: new Date().toISOString(),
+        }));
+
+        console.log("✅ Avatar updated in state");
+        return urlWithTimestamp;
+      } catch (error) {
+        console.error("❌ Avatar upload error:", error.message || error);
+        throw error;
+      }
+    },
+    [userInfo, t],
+  );
+
+  // Функція для видалення аватарки
+  const deleteAvatar = useCallback(async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error(
+          t("user_not_authenticated") || "Користувач не авторизований",
+        );
+      }
+
+      // Видаляємо файл зі сховища
+      const currentAvatarUrl = userInfo?.avatarUrl;
+      if (currentAvatarUrl) {
+        try {
+          const fileName = currentAvatarUrl.split("/").pop();
+          await supabase.storage
+            .from("user-content")
+            .remove([`avatars/${user.id}/${fileName}`]);
+        } catch (deleteError) {
+          console.warn("⚠️ Не вдалося видалити файл аватара:", deleteError);
+        }
+      }
+
+      // Оновлюємо профіль користувача (видаляємо avatar_url)
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({
+          avatar_url: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (updateError) {
+        throw new Error(updateError.message);
+      }
+
+      // Оновлюємо локальний стан
+      setUserInfo((prev) => ({
+        ...prev,
+        avatarUrl: null,
+        updatedAt: new Date().toISOString(),
+      }));
+
+      return true;
+    } catch (error) {
+      console.error(
+        t("avatar_delete_error") || "Помилка видалення аватарки",
+        error,
+      );
+      throw error;
+    }
+  }, [userInfo, t]);
+
+  // Функція для оновлення конкретного поля
+  const updateUserField = useCallback(
+    async (field, value) => {
+      return await updateUserInfo({ [field]: value });
+    },
+    [updateUserInfo],
+  );
+
+  // Функція для форматування адреси гаманця
+  const formatWalletAddress = useCallback(
+    (address, startChars = 6, endChars = 4) => {
+      if (!address) return "";
+      if (address.length <= startChars + endChars) return address;
+      return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
+    },
+    [],
+  );
+
+  // Функція для отримання віку з дати народження
+  function calculateAge(dateOfBirth) {
+    if (!dateOfBirth) return null;
+
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
+
+  // Функція для отримання аватара (з fallback на ініціали)
+  const getAvatar = useCallback(() => {
+    if (userInfo?.avatarUrl) {
+      return userInfo.avatarUrl;
+    }
+    return null;
+  }, [userInfo]);
+
+  // Завантажуємо інформацію при ініціалізації
+  useEffect(() => {
+    console.log("🎯 useUserInfo useEffect triggered");
+    loadUserInfo();
+  }, [loadUserInfo]);
+
+  return {
+    // Основні дані
+    userInfo,
+    loading,
+    error,
+
+    // Методи для роботи з даними
+    loadUserInfo,
+    updateUserInfo,
+    updateUserField,
+    uploadAvatar,
+    deleteAvatar,
+    formatWalletAddress,
+
+    // Утилітні функції
+    calculateAge,
+
+    // Швидкий доступ до основних полів
+    getEmail: () => userInfo?.email || "",
+    getUniqueName: () => userInfo?.uniqueName || "",
+    getCountry: () => userInfo?.country || "EARTH",
+    getWalletAddress: () => userInfo?.walletAddress || "",
+    getDateOfBirth: () => userInfo?.dateOfBirth || null,
+    getAge: () => userInfo?.age || null,
+    getSocialLinks: () => userInfo?.socialLinks || [],
+    getAvatarUrl: () => userInfo?.avatarUrl || null,
+    getAvatar: getAvatar,
+
+    // Перевірки станів
+    isAuthenticated: !!userInfo,
+    hasWallet: !!userInfo?.walletAddress,
+    hasAvatar: !!userInfo?.avatarUrl,
+    // ДОДАЙТЕ ЦІ МЕТОДИ ↓
+    getRole: () => userInfo?.role || "user",
+    isAdmin: () => userInfo?.role === "admin",
+    isModerator: () =>
+      userInfo?.role === "moderator" || userInfo?.role === "admin",
+  };
+}
