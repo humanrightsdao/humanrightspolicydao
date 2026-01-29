@@ -37,9 +37,10 @@ class AIService {
 
       this.conversationHistory.push({
         role: "assistant",
-        content: response,
+        content: response.text,
         timestamp: new Date().toISOString(),
         responseTime: this.lastResponseTime,
+        wasTruncated: response.wasTruncated || false,
       });
 
       // Limit history
@@ -48,13 +49,17 @@ class AIService {
       }
 
       console.log(`✅ ${this.name} successful: ${this.lastResponseTime}ms`);
+      if (response.wasTruncated) {
+        console.warn("⚠️ Response was truncated, adding continuation note");
+      }
 
       return {
         success: true,
-        message: response,
+        message: response.text,
         responseTime: this.lastResponseTime,
         messageId: Date.now().toString(),
         timestamp: new Date().toISOString(),
+        wasTruncated: response.wasTruncated || false,
       };
     } catch (error) {
       console.error(`❌ ${this.name} error:`, error);
@@ -81,10 +86,10 @@ class AIService {
 
     // Form prompt with conversation history
     const historyContext = this.conversationHistory
-      .slice(-8) // Last 4 message pairs
+      .slice(-4) // Last 2 message pairs (reduced from 8)
       .map(
         (msg) =>
-          `${msg.role === "user" ? "User" : "AI Atticus"}: ${msg.content}`,
+          `${msg.role === "user" ? "User" : "AI Atticus"}: ${msg.content.substring(0, 200)}`, // Truncate history messages
       )
       .join("\n\n");
 
@@ -113,6 +118,7 @@ COMMUNICATION STYLE:
 • Specific, with law references
 • Practical, with examples
 • Supportive and motivating
+• IMPORTANT: If your response gets cut off due to length, end with "..." so user knows to ask for continuation
 
 CONVERSATION HISTORY:
 ${historyContext}
@@ -123,7 +129,7 @@ AI ATTICUS RESPONSE (in user's language):`;
 
     try {
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
         {
           method: "POST",
           headers: {
@@ -145,7 +151,7 @@ AI ATTICUS RESPONSE (in user's language):`;
               temperature: 0.3,
               topK: 40,
               topP: 0.9,
-              maxOutputTokens: 2000,
+              maxOutputTokens: 8000, // Increased from 2000 to 8000
             },
             safetySettings: [
               {
@@ -204,6 +210,13 @@ AI ATTICUS RESPONSE (in user's language):`;
       }
 
       const candidate = data.candidates[0];
+      let wasTruncated = false;
+
+      // Check if response was truncated
+      if (candidate.finishReason === "MAX_TOKENS") {
+        console.warn("⚠️ Response was truncated due to token limit");
+        wasTruncated = true;
+      }
 
       if (
         candidate.finishReason === "SAFETY" ||
@@ -223,14 +236,31 @@ AI ATTICUS RESPONSE (in user's language):`;
         throw new Error("Invalid response format from Gemini");
       }
 
-      const generatedText = candidate.content.parts[0].text;
+      let generatedText = candidate.content.parts[0].text;
 
       if (!generatedText || generatedText.trim() === "") {
         throw new Error("Empty response from Gemini");
       }
 
+      // Log response length
+      console.log(`📏 Response length: ${generatedText.length} characters`);
+
+      // If truncated, add continuation note
+      if (wasTruncated) {
+        // Check if already ends with "..."
+        if (!generatedText.trim().endsWith("...")) {
+          generatedText =
+            generatedText.trim() +
+            "...\n\n[Відповідь обрізана через обмеження довжини. Будь ласка, задайте уточнююче питання або попросіть продовжити.]";
+        }
+      }
+
       // Return response in user's language
-      return this.addSignature(generatedText);
+      return {
+        text: this.addSignature(generatedText),
+        wasTruncated: wasTruncated,
+        finishReason: candidate.finishReason,
+      };
     } catch (error) {
       console.error("Gemini request error:", error);
       if (
@@ -276,6 +306,7 @@ AI ATTICUS RESPONSE (in user's language):`;
       status: this.isInitialized ? "ready" : "not_initialized",
       model: "gemini-2.0-flash",
       service: "Google Gemini AI",
+      maxTokens: 8000, // Updated to reflect new limit
       features: [
         "Multilingual support (responds in user's language)",
         "References to law articles and constitutions",
@@ -283,6 +314,7 @@ AI ATTICUS RESPONSE (in user's language):`;
         "ECHR case citations",
         "Practical legal advice",
         "Specific article references",
+        "Extended response length (8000 tokens)",
       ],
       note: "AI Atticus - your human rights protection assistant",
     };
@@ -306,6 +338,7 @@ AI ATTICUS RESPONSE (in user's language):`;
         advisor: this.name,
         service: "Google Gemini API",
         model: "gemini-2.0-flash",
+        maxTokens: 8000,
         testMessage,
         response: result.message,
         responseTime: result.responseTime,
@@ -316,6 +349,7 @@ AI ATTICUS RESPONSE (in user's language):`;
           "ECHR case citations",
           "Practical legal advice",
           "Constitutional references",
+          "Extended response length",
         ],
         timestamp: new Date().toISOString(),
       };
@@ -341,4 +375,5 @@ export const aiService = new AIService();
 if (typeof window !== "undefined") {
   window.aiService = aiService;
   console.log(`🧠 ${aiService.name} AI advisor ready with Gemini API!`);
+  console.log(`⚡ Max response tokens: 8000`);
 }
