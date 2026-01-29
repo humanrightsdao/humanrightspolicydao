@@ -18,8 +18,6 @@ import {
   ChevronUp,
   ExternalLink,
   ArrowRight,
-  MapIcon,
-  List,
 } from "lucide-react";
 import Layout from "../components/Layout";
 import { supabase } from "../lib/supabase";
@@ -260,316 +258,338 @@ const ComplaintsListPage = () => {
       {/* Main page - displayed only if create post modal is not open */}
       {!showCreatePostModal && (
         <div>
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-              {t("complaints_list") || "Complaints List"}
-            </h1>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              {t("complaints_list_description") ||
-                "All submitted human rights violation complaints"}
-            </p>
-          </div>
-
-          {/* Navigation links */}
-          <div className="mb-6 flex flex-wrap gap-2">
-            <button
-              onClick={() => navigate("/violations-map")}
-              className="px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-full text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-1.5"
-            >
-              <MapIcon className="w-3 h-3" />
-              {t("violations_map") || "Map"}
-            </button>
-            <button
-              onClick={() => navigate("/complaints")}
-              className="px-3 py-1.5 bg-blue-900 text-white text-xs rounded-full hover:bg-blue-800 transition-colors flex items-center gap-1.5"
-            >
-              <Plus className="w-3 h-3" />
-              {t("submit_complaint") || "Submit Complaint"}
-            </button>
-            {isModerator && (
-              <button
-                onClick={() => navigate("/moderation")}
-                className="px-3 py-1.5 bg-purple-900 text-white text-xs rounded-full hover:bg-purple-800 transition-colors flex items-center gap-1.5"
-              >
-                <Shield className="w-3 h-3" />
-                {t("moderation_panel") || "Moderation"}
-              </button>
-            )}
-          </div>
-
-          {/* Filters */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              {/* Search */}
-              <div className="lg:col-span-2">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                  <input
-                    type="text"
-                    value={filters.searchQuery}
-                    onChange={(e) =>
-                      setFilters((prev) => ({
-                        ...prev,
-                        searchQuery: e.target.value,
-                      }))
-                    }
-                    placeholder={
-                      t("search_complaints") || "Search complaints..."
-                    }
-                    className="w-full pl-8 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                  />
+          <div className="max-w-7xl mx-auto py-4 px-3">
+            {/* Header */}
+            <div className="mb-4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                    {t("complaints_list") || "Complaints List"}
+                  </h1>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    {t("complaints_list_description") ||
+                      "All submitted human rights violation complaints"}
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {isModerator && (
+                    <button
+                      onClick={() => navigate("/moderation")}
+                      className="px-4 py-2 bg-purple-900 text-white text-sm rounded-full hover:bg-purple-800 transition-colors flex items-center gap-1.5 justify-center"
+                    >
+                      <Shield className="w-4 h-4" />
+                      {t("moderation_panel") || "Moderation"}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => navigate("/complaints")}
+                    className="px-4 py-2 bg-blue-900 text-white text-sm rounded-full hover:bg-blue-800 transition-colors flex items-center gap-1.5 justify-center"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t("submit_complaint") || "Submit Complaint"}
+                  </button>
                 </div>
               </div>
-
-              {/* Country */}
-              <div>
-                <select
-                  value={filters.country}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      country: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">
-                    {t("all_countries") || "All countries"}
-                  </option>
-                  {getAllCountries().map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Priority (adapted for three options) */}
-              <div>
-                <select
-                  value={filters.priority}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      priority: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">
-                    {t("all_priorities") || "All priorities"}
-                  </option>
-                  <option value="critical_priority">
-                    {t("critical_priority") || "Critical"}
-                  </option>
-                  <option value="high_priority">
-                    {t("high_priority") || "High"}
-                  </option>
-                  <option value="normal_priority">
-                    {t("normal_priority") || "Normal"}
-                  </option>
-                </select>
-              </div>
             </div>
-          </div>
 
-          {/* Error message */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-              <p className="text-xs text-red-900 dark:text-red-100">{error}</p>
-            </div>
-          )}
-
-          {/* Complaints list */}
-          {loading ? (
-            <div className="flex justify-center py-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-              <Loader className="w-6 h-6 animate-spin text-blue-600" />
-            </div>
-          ) : complaints.length === 0 ? (
-            <div className="text-center py-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-              {filters.showMyComplaints ? (
-                <>
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    {t("no_my_complaints") ||
-                      "You haven't submitted any complaints yet"}
-                  </p>
-                  <button
-                    onClick={() => navigate("/complaints")}
-                    className="px-4 py-2 bg-blue-900 text-white text-sm rounded-full hover:bg-blue-800 transition-colors inline-flex items-center gap-1.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    {t("submit_first_complaint") || "Submit First Complaint"}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    {t("no_published_complaints") ||
-                      "No published complaints yet"}
-                  </p>
-                  <button
-                    onClick={() => navigate("/complaints")}
-                    className="px-4 py-2 bg-blue-900 text-white text-sm rounded-full hover:bg-blue-800 transition-colors inline-flex items-center gap-1.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    {t("submit_first_complaint") || "Submit First Complaint"}
-                  </button>
-                </>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {complaints.map((complaint) => (
-                <div
-                  key={complaint.id}
-                  className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  {/* Complaint header */}
-                  <div className="p-4">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        {/* Title and priority */}
-                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
-                            {complaint.title}
-                          </h3>
-                          <span
-                            className={`px-2 py-0.5 text-xs font-medium rounded-full ${getPriorityColor(
-                              complaint.priority,
-                            )}`}
-                          >
-                            {getPriorityText(complaint.priority)}
-                          </span>
-                        </div>
-
-                        {/* Meta information */}
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-400 mb-2">
-                          <div className="flex items-center gap-1">
-                            <Globe className="w-3 h-3" />
-                            <span>
-                              {getTranslatedCountryName(complaint.country_code)}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            <span className="truncate max-w-xs">
-                              {complaint.address}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            <span>{formatDate(complaint.created_at)}</span>
-                          </div>
-                        </div>
-
-                        {/* Views statistics */}
-                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                          <Eye className="w-3 h-3" />
-                          <span>
-                            {complaint.views || 0} {t("views") || "views"}
-                          </span>
-                        </div>
-
-                        {/* Short description */}
-                        {complaint.violation_description && (
-                          <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-                            {complaint.violation_description.substring(0, 150)}
-                            {complaint.violation_description.length > 150 &&
-                              "..."}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* View details button */}
-                      <div className="flex-shrink-0 mt-2 md:mt-0">
-                        <button
-                          onClick={() => handleViewDetails(complaint.id)}
-                          className="w-full md:w-auto px-4 py-2 bg-blue-900 text-white text-sm rounded-full hover:bg-blue-800 transition-colors flex items-center justify-center gap-1.5"
-                        >
-                          <span className="font-medium">
-                            {t("view_details") || "Details"}
-                          </span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+            {/* Main content area */}
+            <div>
+              {/* Filters */}
+              <div className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg mb-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                  {/* Search */}
+                  <div className="lg:col-span-2">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                      <input
+                        type="text"
+                        value={filters.searchQuery}
+                        onChange={(e) =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            searchQuery: e.target.value,
+                          }))
+                        }
+                        placeholder={
+                          t("search_complaints") || "Search complaints..."
+                        }
+                        className="w-full pl-8 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                      />
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(1, prev - 1))
-                    }
-                    disabled={currentPage === 1}
-                    className="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    {t("previous") || "Previous"}
-                  </button>
-
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        pageNum = i + 1;
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1;
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i;
-                      } else {
-                        pageNum = currentPage - 2 + i;
+                  {/* Country */}
+                  <div>
+                    <select
+                      value={filters.country}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          country: e.target.value,
+                        }))
                       }
-
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`w-8 h-8 text-sm rounded ${
-                            currentPage === pageNum
-                              ? "bg-blue-900 text-white"
-                              : "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                          } transition-colors`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
+                      className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="all">
+                        {t("all_countries") || "All countries"}
+                      </option>
+                      {getAllCountries().map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    {t("next") || "Next"}
-                  </button>
+                  {/* Priority (adapted for three options) */}
+                  <div>
+                    <select
+                      value={filters.priority}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          priority: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="all">
+                        {t("all_priorities") || "All priorities"}
+                      </option>
+                      <option value="critical_priority">
+                        {t("critical_priority") || "Critical"}
+                      </option>
+                      <option value="high_priority">
+                        {t("high_priority") || "High"}
+                      </option>
+                      <option value="normal_priority">
+                        {t("normal_priority") || "Normal"}
+                      </option>
+                    </select>
+                  </div>
                 </div>
+              </div>
 
-                {/* Count information */}
-                {complaints.length > 0 && (
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
-                    {t("showing") || "Showing"}{" "}
-                    {(currentPage - 1) * itemsPerPage + 1} -{" "}
-                    {Math.min(currentPage * itemsPerPage, complaints.length)}{" "}
-                    {t("of") || "of"} {complaints.length}
+              {/* Content */}
+              <div>
+                {/* Error message */}
+                {error && (
+                  <div className="mb-3 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    <p className="text-xs text-red-900 dark:text-red-100">
+                      {error}
+                    </p>
+                  </div>
+                )}
+
+                {/* Complaints list */}
+                {loading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader className="w-6 h-6 animate-spin text-blue-600" />
+                  </div>
+                ) : complaints.length === 0 ? (
+                  <div className="text-center py-6 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                    {filters.showMyComplaints ? (
+                      <>
+                        <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          {t("no_my_complaints") ||
+                            "You haven't submitted any complaints yet"}
+                        </p>
+                        <button
+                          onClick={() => navigate("/complaints")}
+                          className="px-4 py-1.5 bg-blue-900 text-white text-sm rounded hover:bg-blue-800 transition-colors inline-flex items-center gap-1.5"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          {t("submit_first_complaint") ||
+                            "Submit First Complaint"}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          {t("no_published_complaints") ||
+                            "No published complaints yet"}
+                        </p>
+                        <button
+                          onClick={() => navigate("/complaints")}
+                          className="px-4 py-1.5 bg-blue-900 text-white text-sm rounded hover:bg-blue-800 transition-colors inline-flex items-center gap-1.5"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          {t("submit_first_complaint") ||
+                            "Submit First Complaint"}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {complaints.map((complaint) => (
+                      <div
+                        key={complaint.id}
+                        className="bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-sm transition-shadow"
+                      >
+                        {/* Complaint header */}
+                        <div className="p-3">
+                          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              {/* Title and priority */}
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                                  {complaint.title}
+                                </h3>
+                                <span
+                                  className={`px-2 py-0.5 text-xs font-medium rounded-full ${getPriorityColor(
+                                    complaint.priority,
+                                  )}`}
+                                >
+                                  {getPriorityText(complaint.priority)}
+                                </span>
+                              </div>
+
+                              {/* Meta information */}
+                              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-400 mb-2">
+                                <div className="flex items-center gap-1">
+                                  <Globe className="w-3 h-3" />
+                                  <span>
+                                    {getTranslatedCountryName(
+                                      complaint.country_code,
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  <span className="truncate max-w-xs">
+                                    {complaint.address}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Calendar className="w-3 h-3" />
+                                  <span>
+                                    {formatDate(complaint.created_at)}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Views statistics */}
+                              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                                <Eye className="w-3 h-3" />
+                                <span>
+                                  {complaint.views || 0} {t("views") || "views"}
+                                </span>
+                              </div>
+
+                              {/* Short description */}
+                              {complaint.violation_description && (
+                                <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+                                  {complaint.violation_description.substring(
+                                    0,
+                                    150,
+                                  )}
+                                  {complaint.violation_description.length >
+                                    150 && "..."}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* View details button */}
+                            <div className="flex-shrink-0 mt-2 md:mt-0">
+                              <button
+                                onClick={() => handleViewDetails(complaint.id)}
+                                className="w-full md:w-auto px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center justify-center gap-1.5"
+                              >
+                                <span className="font-medium">
+                                  {t("view_details") || "Details"}
+                                </span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() =>
+                            setCurrentPage((prev) => Math.max(1, prev - 1))
+                          }
+                          disabled={currentPage === 1}
+                          className="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          {t("previous") || "Previous"}
+                        </button>
+
+                        <div className="flex items-center gap-1">
+                          {Array.from(
+                            { length: Math.min(5, totalPages) },
+                            (_, i) => {
+                              let pageNum;
+                              if (totalPages <= 5) {
+                                pageNum = i + 1;
+                              } else if (currentPage <= 3) {
+                                pageNum = i + 1;
+                              } else if (currentPage >= totalPages - 2) {
+                                pageNum = totalPages - 4 + i;
+                              } else {
+                                pageNum = currentPage - 2 + i;
+                              }
+
+                              return (
+                                <button
+                                  key={i}
+                                  onClick={() => setCurrentPage(pageNum)}
+                                  className={`w-8 h-8 text-sm rounded ${
+                                    currentPage === pageNum
+                                      ? "bg-blue-900 text-white"
+                                      : "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                                  } transition-colors`}
+                                >
+                                  {pageNum}
+                                </button>
+                              );
+                            },
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() =>
+                            setCurrentPage((prev) =>
+                              Math.min(totalPages, prev + 1),
+                            )
+                          }
+                          disabled={currentPage === totalPages}
+                          className="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          {t("next") || "Next"}
+                        </button>
+                      </div>
+
+                      {/* Count information */}
+                      {complaints.length > 0 && (
+                        <div className="text-xs text-gray-600 dark:text-gray-400">
+                          {t("showing") || "Showing"}{" "}
+                          {(currentPage - 1) * itemsPerPage + 1} -{" "}
+                          {Math.min(
+                            currentPage * itemsPerPage,
+                            complaints.length,
+                          )}{" "}
+                          {t("of") || "of"} {complaints.length}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             </div>
-          )}
+          </div>
         </div>
       )}
     </Layout>
