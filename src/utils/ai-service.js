@@ -129,7 +129,7 @@ AI ATTICUS RESPONSE (in user's language):`;
 
     try {
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
         {
           method: "POST",
           headers: {
@@ -151,7 +151,7 @@ AI ATTICUS RESPONSE (in user's language):`;
               temperature: 0.3,
               topK: 40,
               topP: 0.9,
-              maxOutputTokens: 8000, // Increased from 2000 to 8000
+              maxOutputTokens: 8000,
             },
             safetySettings: [
               {
@@ -251,7 +251,7 @@ AI ATTICUS RESPONSE (in user's language):`;
         if (!generatedText.trim().endsWith("...")) {
           generatedText =
             generatedText.trim() +
-            "...\n\n[Відповідь обрізана через обмеження довжини. Будь ласка, задайте уточнююче питання або попросіть продовжити.]";
+            "...\n\n[Response truncated due to length limit. Please ask a follow-up question or request to continue.]";
         }
       }
 
