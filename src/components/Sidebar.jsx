@@ -95,7 +95,7 @@ const Sidebar = ({
             <div className="mb-8">
               <button
                 onClick={onCreatePost}
-                className="w-full text-left px-4 py-3 bg-gradient-to-r from-blue-950 to-blue-900 dark:from-blue-950 dark:to-blue-900 text-white rounded-full hover:from-black hover:to-blue-950 dark:hover:from-black dark:hover:to-blue-950 transition-all duration-300 font-medium text-sm flex items-center gap-3 shadow-md"
+                className="w-full text-left px-4 py-3 bg-blue-950 dark:bg-blue-950 text-white rounded-full hover:bg-[#400111] dark:hover:bg-[#400111] transition-all duration-300 font-medium text-sm flex items-center gap-3 shadow-md"
               >
                 <Plus className="w-5 h-5" />
                 {t("create_post") || "Create post"}
