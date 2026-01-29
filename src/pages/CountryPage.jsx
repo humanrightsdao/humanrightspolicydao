@@ -985,8 +985,8 @@ export default function CountryPage() {
                   ) : (
                     <div className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full">
                       <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        <span className="text-xs font-medium text-gray-900 dark:text-white">
+                        <Globe className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <span className="text-md font-medium text-gray-900 dark:text-white">
                           {t("global_view") || "Global view"}
                         </span>
                       </div>
