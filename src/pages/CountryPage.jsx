@@ -360,11 +360,11 @@ export default function CountryPage() {
       let markerColor = "red";
 
       if (violation.priority === "critical") {
-        markerColor = "#dc2626";
+        markerColor = "#000000";
       } else if (violation.priority === "high") {
-        markerColor = "#f97316";
+        markerColor = "#dc2626";
       } else {
-        markerColor = "#eab308";
+        markerColor = "#f97316";
       }
 
       const icon = L.divIcon({
