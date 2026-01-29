@@ -113,7 +113,7 @@ const ViolationsSlideshow = () => {
     setCurrentIndex(index);
   };
 
-  // Format date
+  // Format date (залишаємо функцію на випадок, якщо вона потрібна десь інде)
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -206,7 +206,7 @@ const ViolationsSlideshow = () => {
                 </p>
               )}
 
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {currentImage.date && (
                     <span className="text-xs text-gray-400">
@@ -214,7 +214,7 @@ const ViolationsSlideshow = () => {
                     </span>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
