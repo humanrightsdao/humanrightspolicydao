@@ -499,7 +499,7 @@ export default function Layout({
       {/* Container */}
       <div className="p-2 sm:p-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-0">
+          <div className="flex flex-col lg:flex-row gap-0 min-h-[calc(100vh-8rem)]">
             {/* Mobile menu */}
             {isMobileMenuOpen && (
               <div className="lg:hidden fixed inset-0 z-40 bg-black/50">
@@ -537,17 +537,14 @@ export default function Layout({
             </div>
 
             {/* Central content */}
-            <div className="flex-1 order-1 lg:order-2 relative">
+            <div className="flex-1 order-1 lg:order-2 relative min-h-[calc(100vh-8rem)]">
               <div className="hidden lg:block absolute top-0 left-3 bottom-0 w-px bg-gradient-to-b from-transparent via-blue-900 dark:via-gray-700 to-transparent"></div>
               <div className="hidden lg:block absolute top-0 right-3 bottom-0 w-px bg-gradient-to-b from-transparent via-blue-900 dark:via-gray-700 to-transparent"></div>
 
               <div
                 ref={contentRef}
-                className="content-scroll custom-scrollbar smooth-scroll pb-20 lg:pb-0"
-                style={{
-                  minHeight: "calc(100vh - 8rem)",
-                  paddingBottom: "5rem",
-                }}
+                className="h-full content-scroll custom-scrollbar smooth-scroll"
+                style={{ height: "calc(100vh - 8rem)" }}
               >
                 <div className="p-4 sm:p-6">{children}</div>
               </div>
@@ -657,8 +654,8 @@ export default function Layout({
         </div>
       </div>
 
-      {/* Padding for bottom menu  */}
-      <div className="lg:hidden pb-20"></div>
+      {/* Padding for bottom menu - slightly smaller */}
+      <div className="lg:hidden pb-14"></div>
 
       {/* AI assistant modal for mobile version */}
       {showAI && (
