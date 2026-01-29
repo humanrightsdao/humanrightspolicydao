@@ -977,7 +977,7 @@ const CountryFeed = ({
                         </span>
                         {reactionCounts.truth > 0 && (
                           <span className="ml-1 text-xs">
-                            ({reactionCounts.truth})
+                            {reactionCounts.truth}
                           </span>
                         )}
                       </button>
@@ -999,7 +999,7 @@ const CountryFeed = ({
                         </span>
                         {reactionCounts.false > 0 && (
                           <span className="ml-1 text-xs">
-                            ({reactionCounts.false})
+                            {reactionCounts.false}
                           </span>
                         )}
                       </button>
