@@ -101,12 +101,12 @@ const ComplaintDetailsPage = () => {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "critical_priority":
-        return "text-red-600 bg-red-100 dark:bg-red-900/20";
+        return "text-red-600 bg-red-100 dark:bg-gray-900/20";
       case "high_priority":
-        return "text-orange-600 bg-orange-100 dark:bg-orange-900/20";
+        return "text-orange-600 bg-orange-100 dark:bg-red-900/20";
       case "medium":
       case "normal_priority":
-        return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20";
+        return "text-yellow-600 bg-yellow-100 dark:bg-orange-900/20";
       default:
         return "text-gray-600 bg-gray-100 dark:bg-gray-900/20";
     }
