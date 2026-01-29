@@ -543,10 +543,13 @@ export default function Layout({
 
               <div
                 ref={contentRef}
-                className="h-full content-scroll custom-scrollbar smooth-scroll"
-                style={{ height: "calc(100vh - 8rem)" }}
+                className="h-full content-scroll custom-scrollbar smooth-scroll overflow-y-auto"
+                style={{
+                  height: "calc(100vh - 8rem)",
+                  paddingBottom: "5rem",
+                }}
               >
-                <div className="p-4 sm:p-6">{children}</div>
+                <div className="p-4 sm:p-6 pb-20 lg:pb-6">{children}</div>
               </div>
             </div>
 
@@ -654,8 +657,8 @@ export default function Layout({
         </div>
       </div>
 
-      {/* Padding for bottom menu - slightly smaller */}
-      <div className="lg:hidden pb-14"></div>
+      {/* Padding for bottom menu  */}
+      <div className="lg:hidden pb-20"></div>
 
       {/* AI assistant modal for mobile version */}
       {showAI && (
