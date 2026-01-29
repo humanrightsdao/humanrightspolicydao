@@ -296,7 +296,7 @@ const ModerationPage = () => {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "critical_priority":
-        return "text-gray-900 bg-red-100 dark:bg-gray-900/30";
+        return "text-gray-900 bg-red-100 dark:bg-white-10";
       case "high_priority":
         return "text-red-900 bg-orange-100 dark:bg-red-900/30";
       case "normal_priority":
