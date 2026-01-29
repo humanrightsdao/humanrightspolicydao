@@ -218,15 +218,6 @@ const ViolationsMap = () => {
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="${markerColor}">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
-              ${
-                violation.priority === "critical_priority"
-                  ? `
-                <div class="absolute -top-1 -right-1 w-4 h-4 bg-gray-800 border-2 border-white rounded-full flex items-center justify-center">
-                  <span class="text-xs font-bold text-white">!</span>
-                </div>
-              `
-                  : ""
-              }
             </div>
           </div>
         `,
