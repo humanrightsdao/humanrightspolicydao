@@ -357,14 +357,14 @@ export default function CountryPage() {
     filteredViolations.forEach((violation) => {
       if (!violation.latitude || !violation.longitude) return;
 
-      let markerColor = "red";
+      let markerColor = "#f97316";
 
-      if (violation.priority === "critical") {
-        markerColor = "#000000";
-      } else if (violation.priority === "high") {
-        markerColor = "#dc2626";
-      } else {
-        markerColor = "#f97316";
+      if (violation.priority === "critical_priority") {
+        markerColor = "#000000"; // чорний
+      } else if (violation.priority === "high_priority") {
+        markerColor = "#dc2626"; // червоний
+      } else if (violation.priority === "normal_priority") {
+        markerColor = "#f97316"; // оранжевий
       }
 
       const icon = L.divIcon({
