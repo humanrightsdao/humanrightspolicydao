@@ -218,24 +218,6 @@ const ViolationsSlideshow = () => {
             </div>
           </div>
         </div>
-
-        {/* Slide indicators */}
-        {images.length > 1 && (
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={(e) => handleIndicatorClick(index, e)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? "bg-white w-4"
-                    : "bg-white/40 hover:bg-white/60"
-                }`}
-                aria-label={`Go to image ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
