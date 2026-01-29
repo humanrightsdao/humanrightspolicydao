@@ -33,12 +33,6 @@ const Sidebar = ({
     return translated || countryCode;
   };
 
-  const getGradientClasses = (isActive = false) => {
-    return isActive
-      ? "from-black via-gray-900 to-blue-950"
-      : "from-gray-800 via-blue-950 to-blue-800 dark:from-gray-900 dark:via-blue-950 dark:to-blue-900";
-  };
-
   const menuItems = [
     { id: "country", icon: <Globe className="w-5 h-5" /> },
     { id: "support", icon: <Users className="w-5 h-5" /> },
@@ -75,7 +69,7 @@ const Sidebar = ({
                   flex items-center gap-3 text-sm
                   ${
                     activeMenu === item.id
-                      ? `bg-gradient-to-r ${getGradientClasses(true)} text-white shadow`
+                      ? "bg-[#00091c] text-white shadow"
                       : "text-gray-700 dark:text-gray-300 hover:bg-blue-200 dark:hover:bg-gray-700"
                   }
                 `}
