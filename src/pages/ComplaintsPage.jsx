@@ -25,7 +25,7 @@ import { useCountry } from "../hooks/useCountry";
 import CreatePostModal from "../components/CreatePostModal"; // ADDED IMPORT
 
 const ComplaintsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { userInfo, loading: userLoading } = useUserInfo();
   const { getAllCountries, getTranslatedCountryName } = useCountry(
@@ -128,11 +128,16 @@ const ComplaintsPage = () => {
 
       console.log("🌍 Full address for geocoding:", fullAddress);
 
+      // Get current language from i18n
+      const currentLanguage = i18n.language || "en";
+      // Priority: English, fallback to current app language
+      const acceptLanguage = `en,${currentLanguage}`;
+
       // Add parameter to limit search to selected country
       const url =
         countryCode !== "EARTH"
-          ? `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=3&addressdetails=1&countrycodes=${countryCode.toLowerCase()}`
-          : `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=3&addressdetails=1`;
+          ? `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=3&addressdetails=1&countrycodes=${countryCode.toLowerCase()}&accept-language=${acceptLanguage}`
+          : `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=3&addressdetails=1&accept-language=${acceptLanguage}`;
 
       const response = await fetch(url, {
         headers: {
@@ -227,11 +232,16 @@ const ComplaintsPage = () => {
 
         console.log("🔍 Searching addresses:", searchQuery);
 
+        // Get current language from i18n
+        const currentLanguage = i18n.language || "en";
+        // Priority: English, fallback to current app language
+        const acceptLanguage = `en,${currentLanguage}`;
+
         // Add countrycodes parameter to limit search to selected country
         const url =
           countryCode !== "EARTH"
-            ? `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5&addressdetails=1&countrycodes=${countryCode.toLowerCase()}`
-            : `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5&addressdetails=1`;
+            ? `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5&addressdetails=1&countrycodes=${countryCode.toLowerCase()}&accept-language=${acceptLanguage}`
+            : `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5&addressdetails=1&accept-language=${acceptLanguage}`;
 
         const response = await fetch(url, {
           headers: {
@@ -272,7 +282,7 @@ const ComplaintsPage = () => {
         setIsSearchingAddress(false);
       }
     },
-    [getTranslatedCountryName, t],
+    [getTranslatedCountryName, t, i18n],
   );
 
   // Handle address change with debounce
@@ -591,7 +601,7 @@ const ComplaintsPage = () => {
         longitude: coordinates.longitude,
         city: details?.city || null,
         region: details?.region || null,
-        postal_code: details?.postalCode || null,
+        postal_code: details?.postcode || null,
         feedback_preference: true,
         contact_email: userInfo?.email || null,
         is_anonymous: false,
