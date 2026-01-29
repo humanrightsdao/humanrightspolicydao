@@ -22,11 +22,9 @@ const AuthUI = ({
 
   const getColorClasses = (isActive = false) => {
     return {
-      gradient: isActive
-        ? "from-black via-gray-900 to-blue-950"
-        : "from-gray-800 via-blue-900 to-blue-800 dark:from-gray-900 dark:via-blue-950 dark:to-blue-900",
+      gradient: isActive ? "bg-[#400111]" : "bg-blue-950 dark:bg-blue-950",
       hover:
-        "hover:from-black hover:via-gray-900 hover:to-blue-950 dark:hover:from-black dark:hover:via-gray-850 dark:hover:to-blue-950",
+        "hover:bg-[#400111] dark:hover:bg-[#400111] hover:text-white transition-colors duration-300",
     };
   };
 
@@ -35,7 +33,7 @@ const AuthUI = ({
 
     return (
       <div className="space-y-6">
-        {/* Email секція */}
+        {/* Email  */}
         <div className="space-y-4">
           {emailSent ? (
             <div className="space-y-4">
@@ -79,10 +77,9 @@ const AuthUI = ({
                 className={`
                   w-full px-3 py-3 rounded-full font-medium transition-all duration-300
                   flex items-center justify-center gap-2 text-sm text-white transform
-                  bg-gradient-to-r ${colorClasses.gradient} ${colorClasses.hover}
+                  ${colorClasses.gradient} ${colorClasses.hover}
                   ring-1 ring-transparent
                   hover:scale-[1.02] shadow hover:shadow-md
-                  hover:ring-transparent
                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow
                   ${emailLoading ? "cursor-wait" : ""}
                 `}
@@ -117,10 +114,9 @@ const AuthUI = ({
             className={`
               w-full px-3 py-3 rounded-full font-medium transition-all duration-300
               flex items-center justify-center gap-2 text-sm text-white transform
-              bg-gradient-to-r ${colorClasses.gradient} ${colorClasses.hover}
+              ${colorClasses.gradient} ${colorClasses.hover}
               ring-1 ring-transparent
               hover:scale-[1.02] shadow hover:shadow-md
-              hover:transparent
             `}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -149,10 +145,9 @@ const AuthUI = ({
             className={`
               w-full px-3 py-3 rounded-full font-medium transition-all duration-300
               flex items-center justify-center gap-2 text-sm text-white transform
-              bg-gradient-to-r ${colorClasses.gradient} ${colorClasses.hover}
+              ${colorClasses.gradient} ${colorClasses.hover}
               ring-1 ring-transparent
               hover:scale-[1.02] shadow hover:shadow-md
-              hover:transparent
             `}
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -225,10 +220,9 @@ const AuthUI = ({
               className={`
                 w-full px-3 py-3 rounded-full font-medium transition-all duration-300
                 flex items-center justify-center gap-2 text-sm text-white transform
-                bg-gradient-to-r ${colorClasses.gradient} ${colorClasses.hover}
+                ${colorClasses.gradient} ${colorClasses.hover}
                 ring-1 ring-transparent
                 hover:scale-[1.02] shadow hover:shadow-md
-                hover:transparent
                 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow
                 ${emailLoading ? "cursor-wait" : ""}
               `}
@@ -274,10 +268,9 @@ const AuthUI = ({
           className={`
             w-full px-3 py-3 rounded-full font-medium transition-all duration-300
             flex items-center justify-center gap-2 text-sm text-white transform
-            bg-gradient-to-r ${colorClasses.gradient} ${colorClasses.hover}
+            ${colorClasses.gradient} ${colorClasses.hover}
             ring-1 ring-transparent
             hover:scale-[1.02] shadow hover:shadow-md
-            hover:transparent
             disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow
             ${web3Auth.loading ? "cursor-wait" : ""}
           `}
