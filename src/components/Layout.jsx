@@ -496,10 +496,10 @@ export default function Layout({
         <Navbar />
       </div>
 
-      {/* Container */}
-      <div className="p-2 sm:p-4">
+      {/* Container  */}
+      <div className="p-2 sm:p-4 pb-0">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-0 min-h-[calc(100vh-8rem)]">
+          <div className="flex flex-col lg:flex-row gap-0">
             {/* Mobile menu */}
             {isMobileMenuOpen && (
               <div className="lg:hidden fixed inset-0 z-40 bg-black/50">
@@ -536,15 +536,20 @@ export default function Layout({
               </div>
             </div>
 
-            {/* Central content */}
-            <div className="flex-1 order-1 lg:order-2 relative min-h-[calc(100vh-8rem)]">
+            {/* Central content  */}
+            <div className="flex-1 order-1 lg:order-2 relative">
               <div className="hidden lg:block absolute top-0 left-3 bottom-0 w-px bg-gradient-to-b from-transparent via-blue-900 dark:via-gray-700 to-transparent"></div>
               <div className="hidden lg:block absolute top-0 right-3 bottom-0 w-px bg-gradient-to-b from-transparent via-blue-900 dark:via-gray-700 to-transparent"></div>
 
               <div
                 ref={contentRef}
-                className="h-full content-scroll custom-scrollbar smooth-scroll"
-                style={{ height: "calc(100vh - 8rem)" }}
+                className="content-scroll custom-scrollbar smooth-scroll"
+                style={{
+                  height: "calc(100vh - 8rem - 56px)",
+                  minHeight: "calc(100vh - 8rem - 56px)",
+                  maxHeight: "calc(100vh - 8rem - 56px)",
+                  overflowY: "auto",
+                }}
               >
                 <div className="p-4 sm:p-6">{children}</div>
               </div>
@@ -570,9 +575,9 @@ export default function Layout({
         </div>
       </div>
 
-      {/* Mobile bottom menu - smaller buttons */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-blue-800 dark:border-gray-700">
-        <div className="px-1 py-1.5">
+      {/* Mobile bottom menu */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-blue-800 dark:border-gray-700 shadow-lg">
+        <div className="px-2 py-2">
           <div className="flex justify-around items-center">
             {visibleItems.map((item) => {
               const isActive =
@@ -585,23 +590,28 @@ export default function Layout({
                 <button
                   key={item.key}
                   onClick={() => handleMobileMenuItemClick(item)}
-                  className={`flex flex-col items-center p-1.5 rounded-lg transition-all relative ${
+                  className={`flex flex-col items-center justify-center p-1 rounded-lg transition-all relative min-w-0 flex-1 ${
                     isCreateButton
-                      ? "text-white bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 -mt-4 px-2.5 py-2.5 rounded-full shadow-lg"
+                      ? "text-white bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 -mt-5 mx-1 px-1 py-1 rounded-full shadow-lg flex-shrink-0"
                       : isActive
                         ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                         : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   }`}
+                  style={
+                    isCreateButton ? { flex: "0 0 auto", width: "auto" } : {}
+                  }
                 >
-                  <div className={`${isCreateButton ? "w-5 h-5" : "w-4 h-4"}`}>
+                  <div className={`${isCreateButton ? "w-6 h-6" : "w-4 h-4"}`}>
                     {item.icon}
                   </div>
                   <span
-                    className={`text-[10px] max-w-[50px] truncate text-center mt-0.5 ${
-                      isCreateButton ? "font-medium" : ""
+                    className={`text-[9px] leading-tight text-center mt-0.5 px-0.5 break-words max-w-full ${
+                      isCreateButton
+                        ? "font-medium text-[10px] whitespace-nowrap"
+                        : ""
                     }`}
                   >
-                    {item.label}
+                    {isCreateButton ? t("create") || "Create" : item.label}
                   </span>
                 </button>
               );
@@ -610,14 +620,14 @@ export default function Layout({
             {hasHiddenItems && (
               <button
                 onClick={() => setIsMobileMenuExpanded(!isMobileMenuExpanded)}
-                className={`flex flex-col items-center p-1.5 rounded-lg transition-all ${
+                className={`flex flex-col items-center p-1 rounded-lg transition-all min-w-0 flex-1 ${
                   isMobileMenuExpanded
                     ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 <MoreVertical className="w-4 h-4" />
-                <span className="text-[10px] max-w-[50px] truncate text-center mt-0.5">
+                <span className="text-[9px] leading-tight text-center mt-0.5 px-0.5 break-words max-w-full">
                   {t("more") || "More"}
                 </span>
               </button>
@@ -626,7 +636,7 @@ export default function Layout({
 
           {isMobileMenuExpanded && hiddenItems.length > 0 && (
             <div className="mt-1.5 pt-1.5 border-t border-gray-200 dark:border-gray-700 animate-slideUp">
-              <div className="flex flex-wrap justify-center gap-1.5">
+              <div className="flex flex-wrap justify-center gap-1">
                 {hiddenItems.map((item) => {
                   const isActive =
                     item.type === "right"
@@ -637,7 +647,7 @@ export default function Layout({
                     <button
                       key={item.key}
                       onClick={() => handleMobileMenuItemClick(item)}
-                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all text-xs ${
+                      className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-all text-xs ${
                         isActive
                           ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                           : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -653,9 +663,6 @@ export default function Layout({
           )}
         </div>
       </div>
-
-      {/* Padding for bottom menu - slightly smaller */}
-      <div className="lg:hidden pb-14"></div>
 
       {/* AI assistant modal for mobile version */}
       {showAI && (
