@@ -22,7 +22,7 @@ const AuthUI = ({
 
   const getColorClasses = (isActive = false) => {
     return {
-      gradient: isActive ? "bg-[#2B000A]" : "bg-blue-950 dark:bg-blue-950",
+      gradient: isActive ? "bg-[#2B000A]" : "bg-[#00091c] dark:bg-[#00091c]",
       hover:
         "hover:bg-[#2B000A] dark:hover:bg-[#2B000A] hover:text-white transition-colors duration-300",
     };
