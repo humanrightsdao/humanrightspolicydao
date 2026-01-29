@@ -1193,7 +1193,7 @@ const PostPage = () => {
                         </span>
                         {reactionCounts.truth > 0 && (
                           <span className="ml-1 text-xs">
-                            ({reactionCounts.truth})
+                            {reactionCounts.truth}
                           </span>
                         )}
                       </button>
@@ -1212,7 +1212,7 @@ const PostPage = () => {
                         </span>
                         {reactionCounts.false > 0 && (
                           <span className="ml-1 text-xs">
-                            ({reactionCounts.false})
+                            {reactionCounts.false}
                           </span>
                         )}
                       </button>
@@ -1589,7 +1589,7 @@ const PostPage = () => {
                                   <span>{t("truth") || "Truth"}</span>
                                   {commentReactionCounts.truth > 0 && (
                                     <span className="ml-1">
-                                      ({commentReactionCounts.truth})
+                                      {commentReactionCounts.truth}
                                     </span>
                                   )}
                                 </button>
@@ -1608,7 +1608,7 @@ const PostPage = () => {
                                   <span>{t("false") || "False"}</span>
                                   {commentReactionCounts.false > 0 && (
                                     <span className="ml-1">
-                                      ({commentReactionCounts.false})
+                                      {commentReactionCounts.false}
                                     </span>
                                   )}
                                 </button>
