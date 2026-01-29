@@ -200,14 +200,14 @@ const ViolationsMap = () => {
       if (!violation.latitude || !violation.longitude) return;
 
       // Determine marker color based on priority (adapted for three variants)
-      let markerColor = "#eab308"; // yellow by default (normal_priority)
+      let markerColor = "#f97316"; // orange by default (normal_priority -> orange)
 
       if (violation.priority === "critical_priority") {
-        markerColor = "#dc2626"; // dark red
+        markerColor = "#000000"; // black
       } else if (violation.priority === "high_priority") {
-        markerColor = "#f97316"; // orange
+        markerColor = "#dc2626"; // dark red
       } else if (violation.priority === "normal_priority") {
-        markerColor = "#eab308"; // yellow
+        markerColor = "#f97316"; // orange
       }
 
       // Create icon with priority color
@@ -221,7 +221,7 @@ const ViolationsMap = () => {
               ${
                 violation.priority === "critical_priority"
                   ? `
-                <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-600 border-2 border-white rounded-full flex items-center justify-center">
+                <div class="absolute -top-1 -right-1 w-4 h-4 bg-gray-800 border-2 border-white rounded-full flex items-center justify-center">
                   <span class="text-xs font-bold text-white">!</span>
                 </div>
               `
@@ -325,7 +325,7 @@ const ViolationsMap = () => {
       filtered = filtered.filter((v) => {
         if (!v.violation_date) return false;
 
-        const violationDate = new Date(v.violation_date);
+        const violationDate = new Date(violation_date);
         const fromDate = dateFrom ? new Date(dateFrom) : null;
         const toDate = dateTo ? new Date(dateTo) : null;
 
@@ -663,7 +663,7 @@ const ViolationsMap = () => {
                       <svg
                         className="w-4 h-4"
                         viewBox="0 0 24 24"
-                        fill="#dc2626"
+                        fill="#000000"
                       >
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                       </svg>
@@ -675,7 +675,7 @@ const ViolationsMap = () => {
                       <svg
                         className="w-4 h-4"
                         viewBox="0 0 24 24"
-                        fill="#f97316"
+                        fill="#dc2626"
                       >
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                       </svg>
@@ -687,7 +687,7 @@ const ViolationsMap = () => {
                       <svg
                         className="w-4 h-4"
                         viewBox="0 0 24 24"
-                        fill="#eab308"
+                        fill="#f97316"
                       >
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                       </svg>
