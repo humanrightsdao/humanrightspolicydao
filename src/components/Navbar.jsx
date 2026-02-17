@@ -65,7 +65,7 @@ const Navbar = () => {
 
   const handleDocumentClick = () => {
     window.open(
-      "https://ipfs.io/ipfs/QmRXQP1s6rVaiXxrr6jY6Y7EfK1CYvyc82F99siunckoQr/",
+      "https://ipfs.io/ipfs/QmfZ4Qg1XiR6Y1Lnm4fnykWi6EhpwmkVSzzVNiiQS6YMSF/",
       "_blank",
     );
   };
