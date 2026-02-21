@@ -18,7 +18,7 @@ A social platform for documenting human rights violations, submitting complaints
 - Public feed of complaints and posts by country / globally
 - Assistance system for victims (Help Requests) — financial, psychological, legal, etc.
 - AI human rights assistant (powered by custom AI service)
-- Multilingual support (Ukrainian, English, Russian, Spanish and others)
+- Multilingual support (English, Spanish, Ukrainian and others)
 - Moderation of complaints and content
 - Country rating system for human rights compliance (human rights, freedom of speech, etc.)
 - Social feed of human rights violations for each country
@@ -36,10 +36,10 @@ A social platform for documenting human rights violations, submitting complaints
 
 Contact
 
-Website: https://www.humanrightspolicy.org/
-Email: humanrightsdao@gmail.com
-Telegram channel: @humanrightspolicydao
-X (Twitter): @HRightsPolicy
-Facebook: Human Rights Policy DAO
-Patreon: HumanRightsPolicyDAO
-Instagram: @humanrightspolicydao
+- Website: https://www.humanrightspolicy.org/
+- Email: humanrightsdao@gmail.com
+- Telegram channel: @humanrightspolicydao
+- X (Twitter): @HRightsPolicy
+- Facebook: Human Rights Policy DAO
+- Patreon: HumanRightsPolicyDAO
+- Instagram: @humanrightspolicydao
