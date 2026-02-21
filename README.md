@@ -1,16 +1,45 @@
-# React + Vite
+ Human Rights Policy DAO Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%7C%20Auth%20%7C%20Storage-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![i18n](https://img.shields.io/badge/i18next-23.x-26A69A?logo=i18next&logoColor=white)](https://www.i18next.com/)
 
-Currently, two official plugins are available:
+Official website: https://www.humanrightspolicy.org/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A social platform for documenting human rights violations, submitting complaints, providing assistance to victims, creating public pressure and international monitoring.
 
-## React Compiler
+ Main Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- User registration & authentication (email + magic link, Google, Web3/MetaMask)
+- User profile with the ability to specify country of residence
+- Submission of complaints with coordinates, evidence, priority level
+- Human rights violations map (Leaflet) — ViolationsMap
+- Public feed of complaints and posts by country / globally
+- Assistance system for victims (Help Requests) — financial, psychological, legal, etc.
+- AI human rights assistant (powered by custom AI service)
+- Multilingual support (Ukrainian, English, Russian, Spanish and others)
+- Moderation of complaints and content
+- Country rating system for human rights compliance (human rights, freedom of speech, etc.)
+- Social feed of human rights violations for each country
 
-## Expanding the ESLint configuration
+ Technology Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Frontend: React 18 + Vite + Tailwind CSS + Lucide Icons
+- Routing: React Router v6
+- Authentication: Supabase Auth (email, Google, Web3)
+- Backend / Database: Supabase (PostgreSQL + Realtime + Storage)
+- Internationalization: i18next + react-i18next
+- Maps: Leaflet
+- Web3: MetaMask / WalletConnect (wallet connection)
+- AI Chat: custom AI service 
+
+Contact
+
+Website: https://www.humanrightspolicy.org/
+Email: humanrightsdao@gmail.com
+Telegram channel: @humanrightspolicydao
+X (Twitter): @HRightsPolicy
+Facebook: Human Rights Policy DAO
+Patreon: HumanRightsPolicyDAO
+Instagram: @humanrightspolicydao
